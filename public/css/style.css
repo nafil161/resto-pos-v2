@@ -1,22 +1,22 @@
 /* Minimal starter styles */
 :root {
-  --brand: #2092ec;
+    --brand: #2092ec;
 }
 body {
-  font-family:
-    system-ui,
-    -apple-system,
-    Segoe UI,
-    Roboto,
-    "Helvetica Neue",
-    Arial,
-    sans-serif;
-  background: #f8f9fa;
-  color: #212529;
+    font-family:
+        system-ui,
+        -apple-system,
+        Segoe UI,
+        Roboto,
+        "Helvetica Neue",
+        Arial,
+        sans-serif;
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
 }
 .navbar-brand {
-  font-weight: 600;
+    font-weight: 600;
 }
 main {
-  max-width: 900px;
+    max-width: 900px;
 }
