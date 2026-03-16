@@ -47,4 +47,7 @@ Route::middleware('auth')->group(function () {
 
     // Todos app
     Route::resource('todos', TodosController::class);
+
+    // POS
+    Route::get('/pos', \App\Livewire\Pos\IndexBeta::class)->name('pos');
 });
