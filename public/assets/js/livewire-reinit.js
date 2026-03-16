@@ -6,9 +6,13 @@
             if (typeof TemplateCustomizer !== "undefined") {
                 try {
                     // If a previous instance exists, try to update it instead of destroying
-                    if (window.templateCustomizer && document.getElementById('template-customizer')) {
+                    if (
+                        window.templateCustomizer &&
+                        document.getElementById("template-customizer")
+                    ) {
                         try {
-                            window.templateCustomizer.update && window.templateCustomizer.update();
+                            window.templateCustomizer.update &&
+                                window.templateCustomizer.update();
                         } catch (e) {}
                     } else {
                         // Destroy any stale instance reference
@@ -20,7 +24,9 @@
 
                         // Only instantiate when the template HTML factory/strings are available
                         window.templateName =
-                            document.documentElement.getAttribute("data-template") ||
+                            document.documentElement.getAttribute(
+                                "data-template",
+                            ) ||
                             window.templateName ||
                             "";
 
@@ -49,44 +55,72 @@
                             });
                         } catch (e) {
                             // If instantiation fails (missing HTML/template), skip and log
-                            console.warn('TemplateCustomizer instantiation skipped:', e && e.message ? e.message : e);
+                            console.warn(
+                                "TemplateCustomizer instantiation skipped:",
+                                e && e.message ? e.message : e,
+                            );
                         }
                     }
                 } catch (e) {}
             }
 
             // Re-initialize the sidebar Menu instance (destroyed by Livewire DOM swap)
-            const layoutMenuEl = document.getElementById('layout-menu');
-            if (layoutMenuEl && typeof Menu !== 'undefined') {
+            const layoutMenuEl = document.getElementById("layout-menu");
+            if (layoutMenuEl && typeof Menu !== "undefined") {
                 try {
                     if (window.Helpers.mainMenu) {
-                        try { window.Helpers.mainMenu.destroy(); } catch (e) {}
+                        try {
+                            window.Helpers.mainMenu.destroy();
+                        } catch (e) {}
                     }
-                    const isHorizontal = layoutMenuEl.classList.contains('menu-horizontal');
-                    const tplName = document.documentElement.getAttribute('data-template') || window.templateName || '';
-                    const showDropdown = localStorage.getItem('templateCustomizer-' + tplName + '--ShowDropdownOnHover') !== null
-                        ? localStorage.getItem('templateCustomizer-' + tplName + '--ShowDropdownOnHover') === 'true'
-                        : true;
+                    const isHorizontal =
+                        layoutMenuEl.classList.contains("menu-horizontal");
+                    const tplName =
+                        document.documentElement.getAttribute(
+                            "data-template",
+                        ) ||
+                        window.templateName ||
+                        "";
+                    const showDropdown =
+                        localStorage.getItem(
+                            "templateCustomizer-" +
+                                tplName +
+                                "--ShowDropdownOnHover",
+                        ) !== null
+                            ? localStorage.getItem(
+                                  "templateCustomizer-" +
+                                      tplName +
+                                      "--ShowDropdownOnHover",
+                              ) === "true"
+                            : true;
                     const menu = new Menu(layoutMenuEl, {
-                        orientation: isHorizontal ? 'horizontal' : 'vertical',
+                        orientation: isHorizontal ? "horizontal" : "vertical",
                         closeChildren: !!isHorizontal,
                         showDropdownOnHover: showDropdown,
                     });
-                    window.Helpers.scrollToActive && window.Helpers.scrollToActive(false);
+                    window.Helpers.scrollToActive &&
+                        window.Helpers.scrollToActive(false);
                     window.Helpers.mainMenu = menu;
-                } catch (e) { console.warn('Menu reinit failed:', e && e.message); }
+                } catch (e) {
+                    console.warn("Menu reinit failed:", e && e.message);
+                }
             }
 
             // Re-bind menu toggle buttons
-            document.querySelectorAll('.layout-menu-toggle').forEach(function (item) {
-                // Clone to remove old listeners, then re-attach
-                const clone = item.cloneNode(true);
-                item.parentNode && item.parentNode.replaceChild(clone, item);
-                clone.addEventListener('click', function (event) {
-                    event.preventDefault();
-                    window.Helpers && window.Helpers.toggleCollapsed && window.Helpers.toggleCollapsed();
+            document
+                .querySelectorAll(".layout-menu-toggle")
+                .forEach(function (item) {
+                    // Clone to remove old listeners, then re-attach
+                    const clone = item.cloneNode(true);
+                    item.parentNode &&
+                        item.parentNode.replaceChild(clone, item);
+                    clone.addEventListener("click", function (event) {
+                        event.preventDefault();
+                        window.Helpers &&
+                            window.Helpers.toggleCollapsed &&
+                            window.Helpers.toggleCollapsed();
+                    });
                 });
-            });
 
             // Re-run helper initializers that attach to DOM elements
             if (window.Helpers) {
