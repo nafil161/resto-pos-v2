@@ -38,9 +38,9 @@
     @stack('styles')
 
     <!-- Template Customizer & Helpers (must be in <head>) -->
-    <script src="{{ asset('assets/vendor/js/template-customizer.js') }}"></script>
-    <script src="{{ asset('assets/vendor/js/helpers.js') }}"></script>
-    <script src="{{ asset('assets/js/config.js') }}"></script>
+    <script src="{{ asset('assets/vendor/js/template-customizer.js') }}" data-navigate-once></script>
+    <script src="{{ asset('assets/vendor/js/helpers.js') }}" data-navigate-once></script>
+    <script src="{{ asset('assets/js/config.js') }}" data-navigate-once></script>
 
     @livewireStyles
 </head>
@@ -96,21 +96,25 @@
     <!-- /Layout wrapper -->
 
     <!-- Core JS -->
-    <script src="{{ asset('assets/vendor/libs/jquery/jquery.js') }}"></script>
-    <script src="{{ asset('assets/vendor/libs/popper/popper.js') }}"></script>
-    <script src="{{ asset('assets/vendor/js/bootstrap.js') }}"></script>
-    <script src="{{ asset('assets/vendor/libs/node-waves/node-waves.js') }}"></script>
-    <script src="{{ asset('assets/vendor/libs/@algolia/autocomplete-js.js') }}"></script>
-    <script src="{{ asset('assets/vendor/libs/pickr/pickr.js') }}"></script>
-    <script src="{{ asset('assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js') }}"></script>
-    <script src="{{ asset('assets/vendor/libs/hammer/hammer.js') }}"></script>
-    <script src="{{ asset('assets/vendor/js/menu.js') }}"></script>
-    <script src="{{ asset('assets/js/main.js') }}"></script>
-    <script src="{{ asset('js/main.js') }}"></script>
+    <script src="{{ asset('assets/vendor/libs/jquery/jquery.js') }}" data-navigate-once></script>
+    <script src="{{ asset('assets/vendor/libs/popper/popper.js') }}" data-navigate-once></script>
+    <script src="{{ asset('assets/vendor/js/bootstrap.js') }}" data-navigate-once></script>
+    <script src="{{ asset('assets/vendor/libs/node-waves/node-waves.js') }}" data-navigate-once></script>
+    <script src="{{ asset('assets/vendor/libs/@algolia/autocomplete-js.js') }}" data-navigate-once></script>
+    <script src="{{ asset('assets/vendor/libs/pickr/pickr.js') }}" data-navigate-once></script>
+    <script src="{{ asset('assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js') }}" data-navigate-once></script>
+    <script src="{{ asset('assets/vendor/libs/hammer/hammer.js') }}" data-navigate-once></script>
+    <script src="{{ asset('assets/vendor/js/menu.js') }}" data-navigate-once></script>
+    <script src="{{ asset('assets/js/main.js') }}" data-navigate-once></script>
+    <script src="{{ asset('js/main.js') }}" data-navigate-once></script>
 
     @stack('scripts')
 
     @livewireScripts
+
+    <!-- Reinit Livewire navigation helpers -->
+    <script src="{{ asset('assets/js/livewire-reinit.js') }}"></script>
+
 </body>
 
 </html>

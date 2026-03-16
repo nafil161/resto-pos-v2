@@ -3,110 +3,135 @@
 @section('title', 'Dashboard')
 
 @section('content')
-  <h4 class="py-4 mb-6">Dashboard</h4>
 
-  <div class="row g-4 mb-4">
-    <!-- Stats cards -->
-    <div class="col-sm-6 col-xl-3">
-      <div class="card">
-        <div class="card-body">
-          <div class="d-flex align-items-start justify-content-between">
-            <div class="content-left">
-              <span class="text-secondary">Session</span>
-              <div class="d-flex align-items-center my-1">
-                <h4 class="mb-0 me-2">21,459</h4>
-                <p class="text-success mb-0">(+29%)</p>
-              </div>
-              <small class="text-secondary">Total Users</small>
-            </div>
-            <div class="avatar">
-              <span class="avatar-initial rounded bg-label-primary">
-                <i class="icon-base ti tabler-users icon-26px"></i>
-              </span>
-            </div>
-          </div>
+
+@if (session('success'))
+<div class="alert alert-success alert-dismissible mb-4" role="alert">
+    {{ session('success') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+@endif
+
+{{-- Tabs --}}
+<ul class="nav nav-tabs mb-4" id="dashboardTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link {{ count($myApps) > 0 ? 'active' : '' }}" id="my-apps-tab" data-bs-toggle="tab"
+            data-bs-target="#my-apps" type="button" role="tab">
+            <i class="ti tabler-layout-grid me-1"></i> My Apps
+            @if (count($myApps))
+            <span class="badge bg-primary ms-1">{{ count($myApps) }}</span>
+            @endif
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link {{ count($myApps) === 0 ? 'active' : '' }}" id="all-apps-tab" data-bs-toggle="tab"
+            data-bs-target="#all-apps" type="button" role="tab">
+            <i class="ti tabler-apps me-1"></i> All Apps
+        </button>
+    </li>
+</ul>
+
+<div class="tab-content" id="dashboardTabContent">
+
+    {{-- ── My Apps ──────────────────────────────────────────── --}}
+    <div class="tab-pane fade {{ count($myApps) > 0 ? 'show active' : '' }}" id="my-apps" role="tabpanel">
+        @if (count($myApps) === 0)
+        <div class="text-center py-5">
+            <i class="ti tabler-apps-off" style="font-size: 3rem; opacity:.3;"></i>
+            <p class="mt-3 text-muted">You haven't added any apps yet.</p>
+            <button class="btn btn-primary" data-bs-toggle="tab" data-bs-target="#all-apps">
+                Browse All Apps
+            </button>
         </div>
-      </div>
+        @else
+        <div class="row g-4">
+            @foreach ($myApps as $slug => $app)
+            <div class="col-sm-6 col-xl-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body d-flex flex-column">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="avatar me-3">
+                                <span class="avatar-initial rounded {{ $app['icon_bg'] }}">
+                                    <i class="icon-base ti {{ $app['icon'] }} icon-26px"></i>
+                                </span>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">{{ $app['name'] }}</h6>
+                                <small class="text-muted">{{ $app['is_free'] ? 'Free' : 'Paid' }}</small>
+                            </div>
+                        </div>
+
+                        {{-- If app provides a dashboard partial, include it here to show key metrics --}}
+                        @if (view()->exists('apps.' . $slug . '.dashboard'))
+                            @include('apps.' . $slug . '.dashboard', ['slug' => $slug, 'app' => $app])
+                        @else
+                            <p class="text-muted small flex-grow-1">{{ $app['description'] }}</p>
+                        @endif
+
+                        <div class="d-flex gap-2 mt-2">
+                            <a href="{{ route('apps.open', $slug) }}" wire:navigate class="btn btn-primary btn-sm flex-grow-1">
+                                <i class="ti tabler-player-play me-1"></i> Open
+                            </a>
+                            <form method="POST" action="{{ route('apps.unsubscribe', $slug) }}">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-outline-danger btn-sm d-block" title="Remove from My Apps">
+                                    <i class="ti tabler-x"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endforeach
+        </div>
+        @endif
     </div>
 
-    <div class="col-sm-6 col-xl-3">
-      <div class="card">
-        <div class="card-body">
-          <div class="d-flex align-items-start justify-content-between">
-            <div class="content-left">
-              <span class="text-secondary">Paid Users</span>
-              <div class="d-flex align-items-center my-1">
-                <h4 class="mb-0 me-2">4,567</h4>
-                <p class="text-success mb-0">(+18%)</p>
-              </div>
-              <small class="text-secondary">Last week analytics</small>
+    {{-- ── All Apps ─────────────────────────────────────────── --}}
+    <div class="tab-pane fade {{ count($myApps) === 0 ? 'show active' : '' }}" id="all-apps" role="tabpanel">
+        <div class="row g-4">
+            @foreach ($allApps as $slug => $app)
+            <div class="col-sm-6 col-xl-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body d-flex flex-column">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="avatar me-3">
+                                <span class="avatar-initial rounded {{ $app['icon_bg'] }}">
+                                    <i class="icon-base ti {{ $app['icon'] }} icon-26px"></i>
+                                </span>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-0">{{ $app['name'] }}</h6>
+                            </div>
+                            <span class="badge {{ $app['is_free'] ? 'bg-label-success' : 'bg-label-warning' }} ms-2">
+                                {{ $app['is_free'] ? 'FREE' : 'PAID' }}
+                            </span>
+                        </div>
+
+                        <p class="text-muted small flex-grow-1">{{ $app['description'] }}</p>
+
+                        <div class="mt-2">
+                            @if (in_array($slug, $myAppSlugs))
+                            <a href="{{ route('apps.open', $slug) }}" wire:navigate
+                                class="btn btn-primary btn-sm w-100">
+                                <i class="ti tabler-player-play me-1"></i> Open App
+                            </a>
+                            @else
+                            <form method="POST" action="{{ route('apps.subscribe', $slug) }}">
+                                @csrf
+                                <button type="submit" class="btn btn-outline-primary btn-sm w-100">
+                                    <i class="ti tabler-plus me-1"></i> Add to My Apps
+                                </button>
+                            </form>
+                            @endif
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="avatar">
-              <span class="avatar-initial rounded bg-label-danger">
-                <i class="icon-base ti tabler-user-plus icon-26px"></i>
-              </span>
-            </div>
-          </div>
+            @endforeach
         </div>
-      </div>
     </div>
 
-    <div class="col-sm-6 col-xl-3">
-      <div class="card">
-        <div class="card-body">
-          <div class="d-flex align-items-start justify-content-between">
-            <div class="content-left">
-              <span class="text-secondary">Active Users</span>
-              <div class="d-flex align-items-center my-1">
-                <h4 class="mb-0 me-2">19,860</h4>
-                <p class="text-danger mb-0">(-14%)</p>
-              </div>
-              <small class="text-secondary">Last week analytics</small>
-            </div>
-            <div class="avatar">
-              <span class="avatar-initial rounded bg-label-success">
-                <i class="icon-base ti tabler-user-check icon-26px"></i>
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-sm-6 col-xl-3">
-      <div class="card">
-        <div class="card-body">
-          <div class="d-flex align-items-start justify-content-between">
-            <div class="content-left">
-              <span class="text-secondary">Pending Users</span>
-              <div class="d-flex align-items-center my-1">
-                <h4 class="mb-0 me-2">237</h4>
-                <p class="text-success mb-0">(+42%)</p>
-              </div>
-              <small class="text-secondary">Last week analytics</small>
-            </div>
-            <div class="avatar">
-              <span class="avatar-initial rounded bg-label-warning">
-                <i class="icon-base ti tabler-user-exclamation icon-26px"></i>
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Livewire counter component example -->
-  <div class="row g-4">
-    <div class="col-12">
-      <div class="card">
-        <div class="card-header">
-          <h5 class="card-title mb-0">Live Counter (Livewire Component)</h5>
-        </div>
-        <div class="card-body">
-          @livewire('counter')
-        </div>
-      </div>
-    </div>
-  </div>
+</div>
 @endsection

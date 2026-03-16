@@ -1,3 +1,19 @@
+@php
+// Detect which app (if any) the user is currently inside,
+// based on the current route name prefix matching an app slug.
+$currentRoute = request()->route()?->getName() ?? '';
+$appsConfig = config('apps', []);
+$currentApp = null;
+
+foreach ($appsConfig as $slug => $app) {
+if (str_starts_with($currentRoute, $slug . '.') || $currentRoute === $slug) {
+$currentApp = $app;
+$currentApp['slug'] = $slug;
+break;
+}
+}
+@endphp
+
 <aside id="layout-menu" class="layout-menu menu-vertical menu">
     <div class="app-brand demo">
         <a href="{{ route('dashboard') }}" class="app-brand-link">
@@ -29,35 +45,47 @@
     <div class="menu-inner-shadow"></div>
 
     <ul class="menu-inner py-1">
-        <!-- Dashboard -->
-        <li class="menu-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-            <a href="{{ route('dashboard') }}" class="menu-link">
-                <i class="menu-icon icon-base ti tabler-smart-home"></i>
-                <div data-i18n="Dashboard">Dashboard</div>
+
+        @if ($currentApp)
+        {{-- ── Inside an App ─────────────────────────────── --}}
+
+        {{-- Back to Dashboard --}}
+        <li class="menu-item">
+            <a href="{{ route('dashboard') }}" wire:navigate class="menu-link">
+                <i class="menu-icon icon-base ti tabler-arrow-left"></i>
+                <div data-i18n="Back">Back to Dashboard</div>
             </a>
         </li>
 
-        <!-- Pages -->
-        <li class="menu-header small text-uppercase">
-            <span class="menu-header-text">Pages</span>
+        {{-- App name header --}}
+        <li class="menu-header small text-uppercase mt-1">
+            <span class="menu-header-text d-flex align-items-center gap-2">
+                <i class="ti {{ $currentApp['icon'] }}"></i>
+                {{ $currentApp['name'] }}
+            </span>
         </li>
-        <li class="menu-item {{ request()->routeIs('page1') ? 'active' : '' }}">
-            <a href="{{ route('page1') }}" class="menu-link">
-                <i class="menu-icon icon-base ti tabler-smart-home"></i>
-                <div data-i18n="Page 1">Page 1</div>
+
+        {{-- App-specific menu items --}}
+        @foreach ($currentApp['sidebar'] as $item)
+        <li class="menu-item {{ request()->routeIs($item['route']) ? 'active' : '' }}">
+            <a href="{{ route($item['route']) }}" wire:navigate class="menu-link">
+                <i class="menu-icon icon-base ti {{ $item['icon'] }}"></i>
+                <div>{{ $item['label'] }}</div>
             </a>
         </li>
-        <li class="menu-item {{ request()->routeIs('page2') ? 'active' : '' }}">
-            <a href="{{ route('page2') }}" class="menu-link">
-                <i class="menu-icon icon-base ti tabler-app-window"></i>
-                <div data-i18n="Page 2">Page 2</div>
+        @endforeach
+
+        @else
+        {{-- ── Dashboard / Default ──────────────────────── --}}
+
+        <li class="menu-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+            <a href="{{ route('dashboard') }}" wire:navigate class="menu-link">
+                <i class="menu-icon icon-base ti tabler-apps"></i>
+                <div data-i18n="Apps">Apps</div>
             </a>
         </li>
-        <li class="menu-item {{ request()->routeIs('login') ? 'active' : '' }}">
-            <a href="{{ route('login') }}" class="menu-link">
-                <i class="menu-icon icon-base ti tabler-app-window"></i>
-                <div data-i18n="Login">Login</div>
-            </a>
-        </li>
+
+        @endif
+
     </ul>
 </aside>

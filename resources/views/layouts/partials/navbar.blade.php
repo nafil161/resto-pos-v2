@@ -84,21 +84,23 @@
                     <li>
                         <div class="dropdown-divider my-1 mx-n2"></div>
                     </li>
+                    @auth
                     <li>
-                        {{-- @auth
-                        <form method="POST" action="{{ route('logout') }}">
+                        <form method="POST" action="{{ route('logout') }}" id="logout-form">
                             @csrf
-                            <a class="dropdown-item" href="{{ route('logout') }}"
-                                onclick="event.preventDefault(); this.closest('form').submit();">
-                                <i class="icon-base ti tabler-power icon-md me-3"></i><span>Log Out</span>
+                            <a class="dropdown-item" href="#"
+                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                <i class="icon-base ti tabler-logout icon-md me-3"></i><span>Log Out</span>
                             </a>
                         </form>
-                        @else
-                        <a class="dropdown-item" href="{{ route('login') }}">
-                            <i class="icon-base ti tabler-power icon-md me-3"></i><span>Log In</span>
-                        </a>
-                        @endauth --}}
                     </li>
+                    @else
+                    <li>
+                        <a class="dropdown-item" href="{{ route('login') }}">
+                            <i class="icon-base ti tabler-login icon-md me-3"></i><span>Log In</span>
+                        </a>
+                    </li>
+                    @endauth
                 </ul>
             </li>
         </ul>
